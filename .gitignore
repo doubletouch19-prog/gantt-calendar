@@ -1,0 +1,15 @@
+# Database
+*.db
+ganttflow.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Mac
+.DS_Store
+
+# Deployment files
+gantt-calendar-deploy.zip

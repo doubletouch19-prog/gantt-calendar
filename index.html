@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gantt Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css?v=11">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <!-- Auth View -->
+    <div class="auth-wrapper" id="auth-view">
+        <div class="auth-card">
+            <div class="logo justify-center mb-4">
+                <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+            <p>Sign in to manage your projects</p>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="auth-email" required placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••">
+                </div>
+                <div id="auth-error" class="auth-error" style="display: none;"></div>
+                <button type="submit" class="btn btn-primary auth-submit" id="btn-login">Sign In</button>
+                <button type="button" class="btn auth-switch" id="btn-switch-auth">Create new account</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="app-layout" id="app-view" style="display: none;">
+        <aside class="app-sidebar collapsed">
+            <div class="sidebar-actions">
+                <button class="btn btn-primary w-100 sidebar-btn" id="btn-add-task-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>New Project</span>
+                </button>
+                <button class="btn btn-outline w-100 sidebar-btn" id="btn-add-tag">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    <span>New Tag</span>
+                </button>
+            </div>
+            
+            <div class="view-switcher-container">
+                <div class="view-switcher">
+                    <button class="view-btn active" id="btn-view-gantt" title="Gantt View">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    </button>
+                    <button class="view-btn" id="btn-view-list" title="List View">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    </button>
+                    <button class="view-btn" id="btn-view-calendar" title="Calendar View">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="app-main">
+        <header class="app-header">
+            <div class="logo" id="btn-toggle-sidebar" style="cursor: pointer;" title="Toggle Sidebar">
+                <svg class="logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+            <div class="header-actions">
+                <div class="user-profile" id="btn-user-profile">
+                    <span id="user-email-display"></span>
+                    <button class="btn btn-outline" id="btn-logout">Sign Out</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="gantt-wrapper" id="gantt-view">
+            <div class="gantt-container" id="gantt-container">
+                <!-- Dynamically generated by app.js -->
+            </div>
+        </main>
+
+        <main class="list-wrapper" id="list-view" style="display: none;">
+            <div class="list-header">
+                <h2>List View</h2>
+                <div class="list-filters">
+                    <select id="filter-month" class="filter-select">
+                        <option value="all">All Months</option>
+                    </select>
+                    <select id="filter-tag" class="filter-select">
+                        <option value="all">All Tags</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Task</th>
+                            <th>Tags</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-tbody">
+                        <!-- rows -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <main class="calendar-wrapper" id="calendar-view" style="display: none;">
+            <div class="calendar-header">
+                <button class="btn btn-outline" id="btn-cal-prev">&lt;</button>
+                <h2 id="calendar-month-year">May 2026</h2>
+                <button class="btn btn-outline" id="btn-cal-next">&gt;</button>
+            </div>
+            <div class="calendar-grid-header">
+                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div class="calendar-grid" id="calendar-grid">
+                <!-- Dynamically populated -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Project Modal -->
+    <div class="modal-overlay" id="project-modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 id="modal-project-title">Add New Project</h3>
+                <button class="close-btn" id="close-project-modal">&times;</button>
+            </div>
+            <form id="project-form">
+                <input type="hidden" id="project-id">
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" id="project-name" required placeholder="E.g., Website Redesign">
+                </div>
+                <div class="form-actions" style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button type="button" class="btn btn-outline" id="btn-delete-project" style="display: none; border-color: #ef4444; color: #ef4444;">Delete</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal-overlay" id="task-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-task-title">Add New Task</h3>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                <input type="hidden" id="task-project-id">
+                <div class="form-group">
+                    <label>Task Name</label>
+                    <input type="text" id="task-name" required placeholder="E.g., Design Review">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="task-start" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="task-end" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tags (Select multiple)</label>
+                    <select id="task-tags" multiple class="tag-select">
+                        <!-- Dynamically populated -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker" id="color-picker">
+                        <div class="color-swatch selected" data-color="var(--task-blue)" style="background: var(--task-blue)"></div>
+                        <div class="color-swatch" data-color="var(--task-purple)" style="background: var(--task-purple)"></div>
+                        <div class="color-swatch" data-color="var(--task-pink)" style="background: var(--task-pink)"></div>
+                        <div class="color-swatch" data-color="var(--task-green)" style="background: var(--task-green)"></div>
+                        <div class="color-swatch" data-color="var(--task-orange)" style="background: var(--task-orange)"></div>
+                        <div class="color-swatch" data-color="var(--task-red)" style="background: var(--task-red)"></div>
+                    </div>
+                </div>
+                <div class="form-actions" style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button type="button" class="btn btn-outline" id="btn-delete-task" style="display: none; border-color: #ef4444; color: #ef4444;">Delete</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Tag Modal -->
+    <div class="modal-overlay" id="tag-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Tag</h3>
+                <button class="close-btn" id="close-tag-modal">&times;</button>
+            </div>
+            <form id="tag-form">
+                <div class="form-group">
+                    <label>Tag Name</label>
+                    <input type="text" id="tag-name" required placeholder="E.g., Bug Fix">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <input type="color" id="tag-color" value="#3b82f6" style="width: 100%; height: 40px; cursor: pointer;">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Create Tag</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="app.js?v=8"></script>
+    </div>
+</body>
+</html>
