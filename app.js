@@ -285,8 +285,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const track = document.createElement('div');
             track.className = 'gantt-timeline-track';
             
-            track.addEventListener('click', () => {
-                openAddTaskModal(project.id);
+            track.addEventListener('click', (e) => {
+                // Ensure they clicked on the track itself, not a task bar
+                if (e.target !== track) return;
+                
+                // Calculate which date cell was clicked
+                const dayEl = document.querySelector('.gantt-day');
+                const dayWidth = dayEl ? dayEl.offsetWidth : 90;
+                const daysClicked = Math.floor(e.offsetX / dayWidth);
+                
+                const clickedDate = new Date(timelineStart);
+                clickedDate.setDate(timelineStart.getDate() + daysClicked);
+                
+                openAddTaskModal(project.id, clickedDate);
             });
 
             // Filter tasks for this project
@@ -439,14 +450,19 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('task-name').focus();
     }
 
-    function openAddTaskModal(projectId) {
+    function openAddTaskModal(projectId, defaultDate = null) {
         document.getElementById('modal-task-title').textContent = 'Add New Task';
         document.getElementById('task-id').value = '';
         document.getElementById('task-project-id').value = projectId || currentProjectId;
         document.getElementById('task-name').value = '';
         
-        const today = new Date(timelineStart);
-        today.setDate(timelineStart.getDate() + daysBefore);
+        let today;
+        if (defaultDate) {
+            today = new Date(defaultDate);
+        } else {
+            today = new Date(timelineStart);
+            today.setDate(timelineStart.getDate() + daysBefore);
+        }
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
 
