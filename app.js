@@ -459,7 +459,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('task-start').value = formatDate(today);
         document.getElementById('task-end').value = formatDate(tomorrow);
         
-        selectedColor = 'var(--task-blue)';
+        const palette = [
+            'var(--task-blue)', 'var(--task-purple)', 'var(--task-pink)', 
+            'var(--task-green)', 'var(--task-orange)', 'var(--task-red)'
+        ];
+        selectedColor = palette[Math.floor(Math.random() * palette.length)];
         colorOptions.forEach(opt => {
             opt.classList.remove('selected');
             if (opt.dataset.color === selectedColor) {

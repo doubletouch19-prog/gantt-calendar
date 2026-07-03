@@ -440,7 +440,7 @@ body {
     padding: 8px 0;
 }
 
-.color-option {
+.color-swatch {
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -449,13 +449,13 @@ body {
     transition: transform 0.2s;
 }
 
-.color-option:hover {
+.color-swatch:hover {
     transform: scale(1.1);
 }
 
-.color-option.selected {
-    border-color: white;
-    box-shadow: 0 0 0 2px var(--bg-panel), 0 0 0 4px rgba(255, 255, 255, 0.2);
+.color-swatch.selected {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2px var(--bg-surface);
 }
 
 .modal-actions {
