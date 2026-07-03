@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (e.target !== track) return;
                 
                 // Calculate which date cell was clicked using exact fractional width
-                const dayEl = document.querySelector('.gantt-day');
+                const dayEl = document.querySelector('.date-cell');
                 const dayWidth = dayEl ? dayEl.getBoundingClientRect().width : 90;
                 const daysClicked = Math.floor(e.offsetX / dayWidth);
                 
