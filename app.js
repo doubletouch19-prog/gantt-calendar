@@ -289,9 +289,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Ensure they clicked on the track itself, not a task bar
                 if (e.target !== track) return;
                 
-                // Calculate which date cell was clicked
+                // Calculate which date cell was clicked using exact fractional width
                 const dayEl = document.querySelector('.gantt-day');
-                const dayWidth = dayEl ? dayEl.offsetWidth : 90;
+                const dayWidth = dayEl ? dayEl.getBoundingClientRect().width : 90;
                 const daysClicked = Math.floor(e.offsetX / dayWidth);
                 
                 const clickedDate = new Date(timelineStart);
@@ -463,8 +463,8 @@ document.addEventListener('DOMContentLoaded', () => {
             today = new Date(timelineStart);
             today.setDate(timelineStart.getDate() + daysBefore);
         }
+        // Set default end date to be the same as the start date
         const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
 
         const formatDate = (d) => {
             const month = String(d.getMonth() + 1).padStart(2, '0');
