@@ -203,6 +203,36 @@ def save_tag():
     db.close()
     return jsonify({'message': 'Tag created', 'id': new_id})
 
+@app.route('/api/tags/<int:tag_id>', methods=['DELETE'])
+def delete_tag(tag_id):
+    if 'user_id' not in session: return jsonify({'error': 'Not logged in'}), 401
+    user_id = session['user_id']
+    
+    db = get_db()
+    # Get tag name before deleting
+    tag = db.execute('SELECT name FROM tags WHERE id = ? AND user_id = ?', (tag_id, user_id)).fetchone()
+    if not tag:
+        db.close()
+        return jsonify({'error': 'Tag not found'}), 404
+        
+    tag_name = tag['name']
+    
+    # Delete the tag
+    db.execute('DELETE FROM tags WHERE id = ? AND user_id = ?', (tag_id, user_id))
+    
+    # Scrub the tag from all tasks for this user
+    tasks = db.execute('SELECT id, tags FROM tasks WHERE user_id = ?', (user_id,)).fetchall()
+    for t in tasks:
+        if t['tags']:
+            task_tags = json.loads(t['tags'])
+            if tag_name in task_tags:
+                task_tags.remove(tag_name)
+                db.execute('UPDATE tasks SET tags = ? WHERE id = ?', (json.dumps(task_tags), t['id']))
+                
+    db.commit()
+    db.close()
+    return jsonify({'message': 'Tag deleted'})
+
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     if 'user_id' not in session:

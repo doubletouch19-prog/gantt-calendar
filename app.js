@@ -584,6 +584,88 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Tag Manager Logic ---
+    const btnManageTags = document.getElementById('btn-manage-tags');
+    const tagManagerModal = document.getElementById('tag-manager-modal');
+    const closeTagManagerModal = document.getElementById('close-tag-manager-modal');
+    const tagManagerList = document.getElementById('tag-manager-list');
+
+    if (btnManageTags) {
+        btnManageTags.addEventListener('click', () => {
+            renderTagManager();
+            tagManagerModal.style.display = 'flex';
+        });
+    }
+
+    if (closeTagManagerModal) {
+        closeTagManagerModal.addEventListener('click', () => {
+            tagManagerModal.style.display = 'none';
+        });
+    }
+
+    function renderTagManager() {
+        tagManagerList.innerHTML = '';
+        if (!allTags || allTags.length === 0) {
+            tagManagerList.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No tags found.</p>';
+            return;
+        }
+
+        allTags.forEach(tag => {
+            const item = document.createElement('div');
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            item.style.justifyContent = 'space-between';
+            item.style.padding = '8px 12px';
+            item.style.background = 'rgba(255, 255, 255, 0.05)';
+            item.style.borderRadius = '6px';
+
+            const leftSide = document.createElement('div');
+            leftSide.style.display = 'flex';
+            leftSide.style.alignItems = 'center';
+            leftSide.style.gap = '8px';
+
+            const colorDot = document.createElement('div');
+            colorDot.style.width = '12px';
+            colorDot.style.height = '12px';
+            colorDot.style.borderRadius = '50%';
+            colorDot.style.background = tag.color || 'var(--text-muted)';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = tag.name;
+
+            leftSide.appendChild(colorDot);
+            leftSide.appendChild(nameSpan);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'icon-btn';
+            deleteBtn.style.color = 'var(--task-red)';
+            deleteBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+            deleteBtn.addEventListener('click', () => deleteTag(tag.id, tag.name));
+
+            item.appendChild(leftSide);
+            item.appendChild(deleteBtn);
+            tagManagerList.appendChild(item);
+        });
+    }
+
+    async function deleteTag(id, name) {
+        if (!confirm(`Are you sure you want to delete the tag "${name}"? This will remove it from all tasks.`)) return;
+
+        try {
+            const res = await fetch(`/api/tags/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                await fetchTags();
+                renderTagManager();
+                fetchTasks(); // Re-render tasks to remove scrubbed tags
+            } else {
+                alert('Failed to delete tag');
+            }
+        } catch (err) {
+            console.error('Failed to delete tag', err);
+            alert('Failed to delete tag');
+        }
+    }
+
     // --- List View Logic ---
     function generateListView() {
         const tbody = document.getElementById('list-tbody');
