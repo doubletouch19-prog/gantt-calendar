@@ -16,6 +16,7 @@
     --task-orange: #f59e0b;
     --task-pink: #ec4899;
     --task-red: #ef4444;
+    --task-gray: #6b7280;
 
     --day-width: max(60px, calc((100vw - var(--sidebar-width) - 48px) / 12));
     --sidebar-width: 260px;

@@ -343,18 +343,29 @@ document.addEventListener('DOMContentLoaded', () => {
         ganttContainer.appendChild(bodyContainer);
     }
 
+    let isInitialRender = true;
+
     function renderApp() {
+        const wrapper = document.querySelector('.gantt-wrapper');
+        const prevScrollLeft = wrapper ? wrapper.scrollLeft : 0;
+
         generateGantt();
         generateListView();
         renderCalendar();
         
-        // Scroll to today's date automatically
-        const wrapper = document.querySelector('.gantt-wrapper');
-        if (wrapper) {
-            const style = getComputedStyle(document.body);
-            const dayWidth = parseInt(style.getPropertyValue('--day-width')) || 60;
-            const offsetDays = Math.max(0, daysBefore - 2); // Show a couple days before today
-            wrapper.scrollLeft = offsetDays * dayWidth;
+        const newWrapper = document.querySelector('.gantt-wrapper');
+        if (newWrapper) {
+            if (isInitialRender) {
+                // Scroll to today's date automatically on first load
+                const dayEl = document.querySelector('.date-cell');
+                const dayWidth = dayEl ? dayEl.getBoundingClientRect().width : 90;
+                const offsetDays = Math.max(0, daysBefore - 2); // Show a couple days before today
+                newWrapper.scrollLeft = offsetDays * dayWidth;
+                isInitialRender = false;
+            } else {
+                // Preserve scroll position on subsequent renders
+                newWrapper.scrollLeft = prevScrollLeft;
+            }
         }
     }
 
@@ -477,9 +488,20 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const palette = [
             'var(--task-blue)', 'var(--task-purple)', 'var(--task-pink)', 
-            'var(--task-green)', 'var(--task-orange)', 'var(--task-red)'
+            'var(--task-green)', 'var(--task-orange)', 'var(--task-red)', 'var(--task-gray)'
         ];
-        selectedColor = palette[Math.floor(Math.random() * palette.length)];
+        
+        // Check project name for specific defaults
+        const project = projects.find(p => p.id === (projectId || currentProjectId));
+        const projName = project ? project.name.toLowerCase() : '';
+        
+        if (projName === 'dommune') {
+            selectedColor = 'var(--task-purple)';
+        } else if (projName === 'biz') {
+            selectedColor = 'var(--task-gray)';
+        } else {
+            selectedColor = palette[Math.floor(Math.random() * palette.length)];
+        }
         colorOptions.forEach(opt => {
             opt.classList.remove('selected');
             if (opt.dataset.color === selectedColor) {
