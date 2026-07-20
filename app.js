@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     today.setHours(0, 0, 0, 0);
     
     // Timeline settings
-    const daysBefore = 7;
-    const totalDays = 737; // Total timeline span (2 years + 7 days)
+    const daysBefore = 365;
+    const totalDays = 1095; // Total timeline span (1 year past + 2 years future)
     
     const timelineStart = new Date(today);
     timelineStart.setDate(today.getDate() - daysBefore);
