@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="index.css?v=15">
+    <link rel="stylesheet" href="index.css?v=16">
     <link rel="stylesheet" href="auth.css">
 
     <!-- iOS Web App Metadata -->
@@ -138,11 +138,14 @@
                 <h2 id="calendar-month-year">May 2026</h2>
                 <button class="btn btn-outline" id="btn-cal-next">&gt;</button>
             </div>
-            <div class="calendar-grid-header">
-                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-            </div>
-            <div class="calendar-grid" id="calendar-grid">
-                <!-- Dynamically populated -->
+            <div class="calendar-scroll-container">
+                <div class="calendar-grid-header">
+                    <div>Sun</div>
+                    <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- JS generated cells -->
+                </div>
             </div>
         </main>
     </div>
