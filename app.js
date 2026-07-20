@@ -437,8 +437,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const wrapper = document.querySelector('.gantt-wrapper');
-
     // Drag to pan logic
     let isDragging = false;
     let startX;
