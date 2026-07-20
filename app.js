@@ -2,11 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    // Timeline settings
-    const daysBefore = 365;
-    const totalDays = 1095; // Total timeline span (1 year past + 2 years future)
+    // Timeline settings (Initial: 1 month past, 3 months future)
+    let daysBefore = 30;
+    let totalDays = 120;
     
-    const timelineStart = new Date(today);
+    let timelineStart = new Date(today);
     timelineStart.setDate(today.getDate() - daysBefore);
 
     let tasks = [];
@@ -344,6 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let isInitialRender = true;
+    let nextScrollLeft = null;
 
     function renderApp() {
         const wrapper = document.querySelector('.gantt-wrapper');
@@ -362,11 +363,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 const offsetDays = Math.max(0, daysBefore - 2); // Show a couple days before today
                 newWrapper.scrollLeft = offsetDays * dayWidth;
                 isInitialRender = false;
+            } else if (nextScrollLeft !== null) {
+                newWrapper.scrollLeft = nextScrollLeft;
+                nextScrollLeft = null;
             } else {
                 // Preserve scroll position on subsequent renders
                 newWrapper.scrollLeft = prevScrollLeft;
             }
         }
+    }
+
+    // Dynamic infinite scrolling
+    const wrapper = document.querySelector('.gantt-wrapper');
+    if (wrapper) {
+        let isFetchingScroll = false;
+        wrapper.addEventListener('scroll', () => {
+            if (isFetchingScroll) return;
+            
+            if (wrapper.scrollLeft === 0) {
+                isFetchingScroll = true;
+                const daysToAdd = 180; // Load 6 more months to the past
+                daysBefore += daysToAdd;
+                totalDays += daysToAdd;
+                timelineStart = new Date(today);
+                timelineStart.setDate(today.getDate() - daysBefore);
+                
+                const dayEl = document.querySelector('.date-cell');
+                const dayWidth = dayEl ? dayEl.getBoundingClientRect().width : 90;
+                nextScrollLeft = daysToAdd * dayWidth;
+                
+                document.documentElement.style.setProperty('--total-days', totalDays);
+                renderApp();
+                setTimeout(() => { isFetchingScroll = false; }, 100);
+                
+            } else if (wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 1) {
+                isFetchingScroll = true;
+                const daysToAdd = 180; // Load 6 more months to the future
+                totalDays += daysToAdd;
+                
+                const prevScroll = wrapper.scrollLeft;
+                nextScrollLeft = prevScroll;
+                
+                document.documentElement.style.setProperty('--total-days', totalDays);
+                renderApp();
+                setTimeout(() => { isFetchingScroll = false; }, 100);
+            }
+        });
     }
 
     checkAuth();
